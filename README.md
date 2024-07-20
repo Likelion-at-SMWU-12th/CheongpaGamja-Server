@@ -1,1 +1,1 @@
-# CheongpaGamja-Server
+# 청파동감자 백엔드 레포
