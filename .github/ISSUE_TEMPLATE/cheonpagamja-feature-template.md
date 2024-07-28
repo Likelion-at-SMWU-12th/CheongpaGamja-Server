@@ -1,7 +1,7 @@
 ---
 name: CheonpaGamja Feature Template
-about: "[Feat]"
-title: ''
+about: "청파감자 Feature 템플렛"
+title: '[Feat]'
 labels: ''
 assignees: ''
 
