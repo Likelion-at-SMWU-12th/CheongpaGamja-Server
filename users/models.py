@@ -4,7 +4,6 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-
 class User(AbstractUser):
   is_mentor = models.BooleanField(default=False)
   profile_pic = models.ImageField(upload_to='profile_pics/', default = 'default.png') # profile_pic dir 만들기, default이미지 업로드하기, 사진 첨부 루트 만들기
@@ -29,11 +28,16 @@ class Interest(models.Model):
   def __str__(self):
     return self.get_name_display()
 
+class Mentee(models.Model):
+  user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mentee')
+
 class Mentor(models.Model):
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mentor')
   interests = models.ManyToManyField(Interest, through='MentorInterest')
   rating = models.FloatField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
   total_ratings = models.PositiveIntegerField(default=0)
+  # 나를 관심 설정한 멘티
+  like_mentees = models.ManyToManyField(Mentee, related_name='liked_mentors')
   
   # 모델 레벌의 유효성 검사는 데이터베이스에 저장되기 전 최종적으로 데이터 유효성 보장
   # 데이터가 어떤 방법으로 저장되기 전에 항상 이 검사를 통과
@@ -49,11 +53,8 @@ class Mentor(models.Model):
 class MentorInterest(models.Model):
   mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
   interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
-  
+
   class Meta:
     unique_together = ('mentor', 'interest')
   def __str__(self):
     return f'{self.mentor.user.username} - {self.interest.name}'
-
-class Mentee(models.Model):
-  user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mentee')

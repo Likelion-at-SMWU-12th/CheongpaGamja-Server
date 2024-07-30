@@ -47,11 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'mentoring',
-    'chatting',
     'users',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'mentoring',
+    'chatting',
 ]
 
 AUTH_USER_MODEL = 'users.User'

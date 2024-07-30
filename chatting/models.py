@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import *
 from mentoring.models import *
 from django.utils import timezone
 

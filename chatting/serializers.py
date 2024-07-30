@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from mentoring.serializers import *
+from users.serializers import *
 
 class ChatSerializer(serializers.ModelSerializer):
     class Meta:
