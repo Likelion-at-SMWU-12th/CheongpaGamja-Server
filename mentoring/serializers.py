@@ -71,5 +71,5 @@ class ConcernViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Concern
-        fields = ['author', 'interests', 'content', 'comments']
+        fields = ['id', 'author', 'interests', 'content', 'comments']
 

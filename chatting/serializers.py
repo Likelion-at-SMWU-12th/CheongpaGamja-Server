@@ -4,9 +4,14 @@ from mentoring.serializers import *
 from users.serializers import *
 
 class ChatSerializer(serializers.ModelSerializer):
+    created_at = serializers.SerializerMethodField()
+    
     class Meta:
         model = Chat
-        fields = "__all__"
+        fields =['id', 'message', 'is_mentee', 'created_at', 'room']
+    
+    def get_created_at(self, obj):
+        return obj.created_at.strftime("%Y.%m.%d")
 
 class ChatRoomSerializer(serializers.ModelSerializer):
     interests = InterestSerializer(many=True)
