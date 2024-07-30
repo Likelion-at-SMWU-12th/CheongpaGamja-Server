@@ -15,8 +15,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+# ImageField를 위해
+from django.conf import settings
+from django.conf.urls.static import static
+
+# 로그인을 위해
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
+    path('users/', include('users.urls')),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # 로그인 엔드포인트
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # 토큰 갱신 엔드포인트
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
