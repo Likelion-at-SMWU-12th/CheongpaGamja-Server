@@ -99,3 +99,34 @@ class UserViewSet(viewsets.ModelViewSet):
 
   def perform_update(self, serializer):
     serializer.save()
+  
+  # 유저를 Hard Delete 하자
+  def delete(self, request, *args, **kwargs):
+    user = self.get_object()
+
+    # 본인 계정만 삭제 가능하도록
+    if request.user != user:
+      return Response(
+        {"detail": "본인 계정만 탈퇴할 수 있습니다."},
+        status=status.HTTP_403_FORBIDDEN
+      )
+
+    # 멘토/멘티 프로필도 삭제하기
+    try:
+      if user.is_mentor:
+        user.mentor.delete()
+      else:
+        user.mentee.delete()
+    except Exception as e:
+      return Response(
+        {"detail": f"Error while deleting related profile: {str(e)}"},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+      )
+
+    # 하드 삭제
+    user.delete()
+
+    return Response(
+      {"detail": "회원 탈퇴가 성공적으로 이루어졌습니다."},
+      status=status.HTTP_204_NO_CONTENT
+    )
