@@ -13,7 +13,10 @@ class User(AbstractUser):
   agreed_to_terms = models.BooleanField(default=False, verbose_name= ("이용약관 동의"))
   @property
   def role(self):
-    return "Mentor" if self.is_mentor else "Mentee"
+    if self.is_mentor:
+      return "Mentor" 
+    else:
+      return "Mentee"
 
 class Interest(models.Model):
   INTEREST_CHOICES = (
