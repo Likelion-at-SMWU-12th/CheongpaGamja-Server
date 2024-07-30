@@ -21,11 +21,14 @@ class MentorSerializer(serializers.ModelSerializer):
   class Meta:
     model = Mentor
     fields = [
+      'id', # read-only로!
+      'user', # read-only로!
       'interests',
       'interests_display',
       'rating',
       'total_ratings'
     ]
+    read_only_fields = ['id', 'user']
 
   def validate_interests(self, value):
     if len(value) > 3:
@@ -39,7 +42,11 @@ class MentorSerializer(serializers.ModelSerializer):
 class MenteeSerializer(serializers.ModelSerializer):
   class Meta:
     model = Mentee
-    fields = []
+    fields = [
+      'id',
+      'user'
+    ]
+    read_only_fields = ['id', 'user']
 
 class UserSerializer(serializers.ModelSerializer):
   mentor_profile = MentorSerializer(required=False)
@@ -54,8 +61,9 @@ class UserSerializer(serializers.ModelSerializer):
     ]
     extra_kwargs = {
       'password': {'write_only': True},
-      'is_mentor': {'read_only': True},
-      'agreed_to_terms': {'read_only': True}
+      # 유저 정보 수정 과정에서 아래는 수정불가하게 하고 싶어서 쓴건데 이때문에 회원가입 절차에서 defualt값인 False로만 저장되더라...
+      # 'is_mentor': {'read_only': True},
+      # 'agreed_to_terms': {'read_only': True}
     }
 
   def create(self, validated_data):
@@ -76,10 +84,11 @@ class UserSerializer(serializers.ModelSerializer):
         MentorInterest.objects.create(mentor=mentor, interest=interest)
 
     # Mentee 생성
-    elif not user.is_mentor and mentee_data:
+    if not user.is_mentor:
+      if mentee_data is None:
+        mentee_data = {}
       # 멘티는 카테고리를 설정하지 않는다는 새로운 설정!
       Mentee.objects.create(user=user, **mentee_data)
-
     return user
 
   def update(self, instance, validated_data):
