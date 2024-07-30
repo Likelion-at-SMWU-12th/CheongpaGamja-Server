@@ -57,17 +57,3 @@ class MentorInterest(models.Model):
 
 class Mentee(models.Model):
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mentee')
-  interests = models.ManyToManyField(Interest, through='MenteeInterest')
-  def clean(self):
-    super().clean()
-    if self.interests.count() > 5:
-        raise ValidationError("멘티는 5개 이하의 관심사를 선택할 수 있습니다.")
-
-class MenteeInterest(models.Model):
-  mentee = models.ForeignKey(Mentee, on_delete=models.CASCADE)
-  interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
-  
-  class Meta:
-    unique_together = ('mentee', 'interest')
-  def __str__(self):
-    return f'{self.mentee.user.username} - {self.interest.name}'

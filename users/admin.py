@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from .models import Mentor, Mentee, Interest, MentorInterest, MenteeInterest
+from .models import Mentor, Mentee, Interest, MentorInterest
 
 User = get_user_model()
 
@@ -22,18 +22,9 @@ class MentorAdmin(admin.ModelAdmin):
         return ", ".join([interest.name for interest in obj.interests.all()])
     get_interests.short_description = "Interests"
 
-class MenteeInterestInline(admin.TabularInline):
-    model = MenteeInterest
-    extra = 1
-
 class MenteeAdmin(admin.ModelAdmin):
-    list_display = ('user', 'get_interests')
+    list_display = ('user',)
     search_fields = ('user__username', 'user__name')
-    inlines = [MenteeInterestInline]
-
-    def get_interests(self, obj):
-        return ", ".join([interest.name for interest in obj.interests.all()])
-    get_interests.short_description = "Interests"
 
 class InterestAdmin(admin.ModelAdmin):
     list_display = ('name',)
