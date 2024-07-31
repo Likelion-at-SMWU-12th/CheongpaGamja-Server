@@ -53,6 +53,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('concerns/<int:concern_id>/', include(router.urls)),
     path('my-page/', my_page),
+    path('my-page/concerns/', my_concerns),
     path('mentors/<int:mentor_id>/likes/', likes_mentor),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

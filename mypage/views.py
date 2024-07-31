@@ -61,6 +61,18 @@ def my_page(request):
     
     return Response(data)
 
+@api_view(['GET'])
+def my_concerns(request):
+    user = request.user
+    
+    if not user.is_mentor:
+        # 고민 최신순 정렬
+        myConcerns = Concern.objects.filter(author=user.mentee).order_by('-created_at')
+        serializer = MyConcernSerializer(myConcerns, many=True).data
+        return Response(serializer, status=status.HTTP_200_OK)
+    else:
+        return Response({"error" : "현재 사용자가 멘티가 아닙니다."})
+
 class LogViewSet(viewsets.ModelViewSet):
     queryset = Log.objects.all()
     serializer_class = MyLogSerializer
