@@ -34,9 +34,11 @@ class MyChatRoomSerializer(serializers.ModelSerializer):
 
 # 마이 페이지 고민 내역
 class MyConcernSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True, read_only=True)
+
     class Meta:
         model = Concern
-        fields = ['id', 'content']
+        fields = ['id', 'content', 'comments']
 
 # 멘토링 일지
 class LogSerializer(serializers.ModelSerializer):

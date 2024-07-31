@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
 from users.models import *
+from django.utils import timezone
 
 # class User(AbstractUser):
 #     is_mentor = models.BooleanField(default=False)
@@ -78,6 +79,7 @@ class Concern(models.Model):
     author = models.ForeignKey(Mentee, on_delete=models.CASCADE)
     interests = models.ManyToManyField(Interest, through='ConcernInterest')
     content = models.CharField(verbose_name='한 줄 고민', max_length=200)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'{self.author.user.name}의 고민 / 내용: {self.content}'
