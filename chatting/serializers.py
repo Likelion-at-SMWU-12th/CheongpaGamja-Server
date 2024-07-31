@@ -23,7 +23,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chatroom
-        fields = ['id', 'interests', 'title', 'mentor', 'last_chat', 'mentor_name', 'mentee', 'mentee_name', 'chats']
+        fields = ['id', 'interests', 'title', 'mentor_response', 'mentor', 'last_chat', 'mentor_name', 'mentee', 'mentee_name', 'chats']
 
     def get_last_chat(self, obj):
         last_chat = obj.chat_set.order_by('-created_at').first()

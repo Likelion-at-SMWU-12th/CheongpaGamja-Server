@@ -6,6 +6,7 @@ from users.models import *
 class Chatroom(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
     mentee = models.ForeignKey(Mentee, on_delete=models.CASCADE)
+    mentor_response = models.BooleanField(default=False)
     interests = models.ManyToManyField(Interest, through='ChatInterest')
     title = models.CharField(max_length=20)
 
