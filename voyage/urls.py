@@ -20,6 +20,8 @@ from django.urls import path, include
 from mentoring.views import *
 from rest_framework.routers import DefaultRouter
 from chatting.views import *
+from users.views import *
+from mypage.views import *
 
 # ImageField를 위해
 from django.conf import settings
@@ -52,6 +54,5 @@ urlpatterns = [
     path('concerns/<int:concern_id>/', include(router.urls)),
     path('my-page/', my_page),
     path('mentors/<int:mentor_id>/likes/', likes_mentor),
-    # path('chat/', createChatroom),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

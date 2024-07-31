@@ -2,11 +2,6 @@
 from rest_framework import serializers
 from .models import User, Mentor, Mentee, Interest, MentorInterest
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ['id', 'username', 'name']
-
 class InterestSerializer(serializers.ModelSerializer):
   class Meta:
     model = Interest
