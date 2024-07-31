@@ -1,10 +1,12 @@
-from django.shortcuts import render
-
 # 회원가입
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from .models import User, Mentor, Mentee, Interest
+from .models import *
+from chatting.models import *
+from chatting.serializers import *
+from mentoring.models import *
+from mentoring.serializers import *
 from .serializers import UserSerializer, MentorSerializer, MenteeSerializer, InterestSerializer
 
 from rest_framework.permissions import AllowAny, IsAuthenticated

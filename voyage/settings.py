@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'mentoring',
     'chatting',
+    'mypage',
 ]
 
 AUTH_USER_MODEL = 'users.User'
