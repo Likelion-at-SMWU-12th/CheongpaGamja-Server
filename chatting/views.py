@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework import viewsets, status
 from mentoring.models import *
 from .models import *
@@ -75,4 +75,30 @@ class ChattingViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['GET'], url_path='my-mentors')
+    def my_mentors(self, request):
+        user = request.user
 
+        if user.is_mentor:
+            return Response({"error : 현재 사용자가 멘티가 아닙니다"})
+        else:
+            myMentors = MentorSerializer(user.mentee.liked_mentors.all(), many=True).data
+            if myMentors:
+                return Response(myMentors, status=status.HTTP_200_OK)          
+            else:
+                return Response({"현재 관심 설정한 멘토가 없습니다."}) 
+
+# 관심 멘토 불러오기
+@api_view(['GET'])
+def my_mentors(request):
+    user = request.user
+
+    if user.is_mentor:
+        return Response({"error : 현재 사용자가 멘티가 아닙니다"})
+    else:
+        myMentors = MentorSerializer(user.mentee.liked_mentors.all(), many=True).data
+        if myMentors:
+            return Response(myMentors, status=status.HTTP_200_OK)          
+        else:
+            return Response({"현재 관심 설정한 멘토가 없습니다."})  

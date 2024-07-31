@@ -48,14 +48,12 @@ def my_page(request):
         # chatrooms = Chatroom.objects.filter(mentee=user.mentee)
         myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
         latest_concern = Concern.objects.filter(author=user.mentee).order_by('-created_at').first()
-        myMentors = MentorSerializer(user.mentee.liked_mentors.all(), many=True).data
         data = {
             "info": MenteeSerializer(user.mentee).data,
             "name": user.name,
             "concerns": MyConcernSerializer(latest_concern).data,
             "mentoringRecord": mentoringRecord,
             "myMentoring": myMentoring,
-            "myMentor": myMentors,
             "myLogs" : MyLogSerializer(myLogs, many=True).data
         }
     

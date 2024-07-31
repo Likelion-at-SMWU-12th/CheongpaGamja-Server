@@ -46,9 +46,6 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # 로그인 엔드포인트
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # 토큰 갱신 엔드포인트
 
-    # path('login/', login_api),
-    # path('signup/', signup_api),
-    # path('', home),
     path('matching/', matching),
     path('', include(router.urls)),
     path('concerns/<int:concern_id>/', include(router.urls)),
