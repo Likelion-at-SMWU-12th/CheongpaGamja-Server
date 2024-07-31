@@ -39,6 +39,7 @@ router.register(r'comments', CommentViewSet, basename='comment')
 router.register(r'mentors', MentorViewSet, basename='mentor')
 router.register(r'chat', ChattingViewSet, basename='chatting')
 router.register(r'log', LogViewSet, basename='log')
+router.register(r'review', ReviewViewSet, basename='review')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

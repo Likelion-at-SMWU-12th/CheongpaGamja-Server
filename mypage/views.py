@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from django.db.models import Count
 from mentoring.models import *
 from .models import *
@@ -35,11 +35,13 @@ def my_page(request):
     if user.is_mentor:
         # chatrooms = Chatroom.objects.filter(mentor=user.mentor)
         myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
+        latest_review = Review.objects.filter(mentor=user.mentor).order_by('-created_at').first()
         data = {
             "info": MentorSerializer(user.mentor).data,
             "name": user.name,
             "mentoringRecord": mentoringRecord,
             "myMentoring": myMentoring,
+            "myReview": MyReviewSerializer(latest_review).data,
             "myLogs" : MyLogSerializer(myLogs, many=True).data
         }
     
@@ -98,3 +100,57 @@ class LogViewSet(viewsets.ModelViewSet):
 
         serializer = LogSerializer(log)
         return Response(serializer.data, status=status.HTTP_201_CREATED) 
+    
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        user = request.user
+
+        if user.is_mentor:
+            reviews = Review.objects.filter(mentor=user.mentor)
+        else:
+            reviews = Review.objects.filter(mentee=user.mentee)
+        
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['GET'], url_path='my-mentoring')
+    def my_mentoring(self, request):
+        user = request.user
+
+        if user.is_mentor:
+            return Response({"error" : "멘토는 후기를 작성할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            my_mentoring = Chatroom.objects.filter(mentee=user.mentee, mentor_response=True)
+            return Response({
+                "my_mentoring" : ChatRoomSerializer(my_mentoring, many=True).data
+            })
+    
+    def create(self, request):
+        user = request.user
+        data = request.data
+
+        if user.is_mentor:
+            return Response({"error":"멘토는 후기를 작성할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            chatroom = get_object_or_404(Chatroom, pk=data.get('chatroomId'))
+            mentor = chatroom.mentor
+            score = data.get("score")
+
+            review = Review.objects.create(
+                mentee = user.mentee,
+                mentor = mentor,
+                chatroom = chatroom,
+                content = data.get("content"),
+                score = score
+            )
+
+            # 멘토의 등대지수 업데이트
+            mentor.update_rating(score)
+            return Response({"리뷰 작성을 완료하였습니다."})
+
+
+
