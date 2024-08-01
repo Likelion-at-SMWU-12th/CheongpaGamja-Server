@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 from mentoring.serializers import *
 from users.serializers import InterestSerializer
+from .utils import time_difference
 
 class ChatSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
@@ -18,7 +19,14 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     mentor_name = serializers.CharField(source='mentor.user.name', read_only=True)
     mentee_name = serializers.CharField(source='mentee.user.name', read_only=True)
     chats = ChatSerializer(many=True, read_only=True, source='chat_set')
+    last_chat = serializers.SerializerMethodField()
 
     class Meta:
         model = Chatroom
-        fields = ['id', 'interests', 'title', 'mentor', 'mentor_name', 'mentee', 'mentee_name', 'chats']
+        fields = ['id', 'interests', 'title', 'mentor_response', 'mentor', 'last_chat', 'mentor_name', 'mentee', 'mentee_name', 'chats']
+
+    def get_last_chat(self, obj):
+        last_chat = obj.chat_set.order_by('-created_at').first()
+        if last_chat:
+            return time_difference(last_chat.created_at)
+        return None

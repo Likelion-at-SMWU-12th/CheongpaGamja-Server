@@ -4,7 +4,7 @@ from mentoring.models import *
 from mentoring.serializers import *
 from chatting.models import *
 from chatting.serializers import *
-from .models import Log
+from .models import *
 
 # 마이 페이지 멘토링(채팅) 내역
 class MyChatRoomSerializer(serializers.ModelSerializer):
@@ -39,3 +39,31 @@ class MyLogSerializer(serializers.ModelSerializer):
     
     def get_created_at(self, obj):
         return obj.created_at.strftime("%Y.%m.%d")
+
+# 멘토링 후기
+class ReviewSerializer(serializers.ModelSerializer):
+    chatroom = ChatRoomSerializer(read_only=True)
+    mentor_name = serializers.CharField(source='mentor.user.name', read_only=True)
+    mentee_name = serializers.CharField(source='mentee.user.name', read_only=True)
+
+    class Meta:
+        model = Review
+        fields = ['id', 'mentor', 'mentor_name', 'mentee', 'mentee_name', 'content', 'score', 'chatroom']
+
+# 마이페이지(멘토) 후기 내역
+class MyReviewSerializer(serializers.ModelSerializer):
+    chatroom_interests = serializers.SerializerMethodField()
+    mentor_name = serializers.CharField(source='mentor.user.name', read_only=True)
+    mentee_name = serializers.CharField(source='mentee.user.name', read_only=True)
+
+    class Meta:
+        model = Review
+        fields = ['id', 'mentor', 'mentor_name', 'mentee', 'mentee_name', 'content', 'score', 'chatroom_interests']
+
+    def get_chatroom_interests(self, obj):
+        chatroom = obj.chatroom
+        
+        if chatroom:
+            interests = chatroom.interests.all()
+            return [{'name': interest.name} for interest in interests]  # Adjust based on your Interest model
+        return []
