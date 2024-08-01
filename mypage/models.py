@@ -18,5 +18,5 @@ class Review(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
     chatroom = models.ForeignKey(Chatroom, on_delete=models.CASCADE)
     content = models.CharField(max_length=500)
-    score = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)])
+    score = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
     created_at = models.DateTimeField(default=timezone.now)
