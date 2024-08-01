@@ -16,6 +16,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 
+from django.contrib.auth.hashers import make_password
+import random
+import string
+
 class GetUserIdView(APIView):
   permission_classes = [AllowAny]
   def get(self, request):
@@ -27,24 +31,45 @@ class GetUserIdView(APIView):
     User = get_user_model()
     try:
       user = User.objects.get(name=name, email=email)
-      return Response({"user_id": user.id})
+      return Response({"username": user.username})
     except User.DoesNotExist:
       return Response({"error": "회원이 존재하지 않습니다"}, status=status.HTTP_404_NOT_FOUND)
 
-class GetUserPWView(APIView):
+class ResetUserPasswordView(APIView):
+  permission_classes = [AllowAny]
+
   def get(self, request):
+    # 사용자 이름과 이메일을 쿼리 매개변수로 받습니다.
     username = request.query_params.get('username')
     email = request.query_params.get('email')
-    
-    if not username or not email:
-      return Response({"error": "회원 ID와 이메일을 모두 입력해주세요"}, status=status.HTTP_400_BAD_REQUEST)
-    User = get_user_model()
-    try:
-      user = User.objects.get(username=username, email=email)
-      return Response({"password": user.password})
-    except User.DoesNotExist:
-      return Response({"error": "회원이 존재하지 않습니다"}, status=status.HTTP_404_NOT_FOUND)
 
+    # 필수 매개변수가 없을 경우 오류 응답 반환
+    if not username or not email:
+      return Response({"error": "사용자 이름과 이메일을 모두 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+      # 사용자 모델에서 해당하는 사용자 찾기
+      user = User.objects.get(username=username, email=email)
+
+      # 임시 비밀번호 생성
+      new_password = self.generate_temp_password()
+      
+      # 비밀번호 변경
+      user.password = make_password(new_password)  # 해시 비밀번호로 저장
+      user.save()
+
+      # 비밀번호 변경 성공 메시지와 임시 비밀번호 반환
+      return Response({"message": "비밀번호가 초기화되었습니다.", "new_password": new_password}, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+      # 사용자가 존재하지 않을 경우 오류 응답 반환
+      return Response({"error": "해당 사용자 정보를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+  def generate_temp_password(self, length=12):
+    """임시 비밀번호 생성"""
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
+  
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
   def validate(self, attrs):
     data = super().validate(attrs)
