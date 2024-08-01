@@ -37,7 +37,7 @@ class Mentee(models.Model):
 class Mentor(models.Model):
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mentor')
   interests = models.ManyToManyField(Interest, through='MentorInterest')
-  rating = models.FloatField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
+  rating = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
   total_ratings = models.PositiveIntegerField(default=0)
   # 나를 관심 설정한 멘티
   like_mentees = models.ManyToManyField(Mentee, related_name='liked_mentors')
@@ -49,7 +49,7 @@ class Mentor(models.Model):
     if self.interests.count() > 3:
         raise ValidationError("멘토는 3개 이하의 관심사를 선택할 수 있습니다.")
   def update_rating(self, new_rating):
-    self.rating = ((self.rating * self.total_ratings) + new_rating) / (self.total_ratings + 1)
+    self.rating = int(((self.rating * self.total_ratings) + new_rating) / (self.total_ratings + 1))
     self.total_ratings += 1
     self.save()
 
