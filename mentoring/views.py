@@ -7,6 +7,7 @@ from users.serializers import *
 from users.models import *
 from .serializers import *
 from .models import *
+from django.db.models import Count
 
 @api_view(['GET'])
 def home(request):
@@ -113,7 +114,8 @@ class ConcernViewSet(viewsets.ModelViewSet):
     # 고민 목록(멘토에게 보여주기)
     def list(self, request):
         if request.user.is_mentor :
-            concerns = Concern.objects.all()
+            # 고민에 대한 답변이 4개 이하인 것만 보여주기
+            concerns = Concern.objects.annotate(num_comments=Count('comments')).filter(num_comments__lte=4)
             serializer = ConcernViewSerializer(concerns, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
