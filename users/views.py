@@ -16,6 +16,34 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 
+class GetUserIdView(APIView):
+  permission_classes = [AllowAny]
+  def get(self, request):
+    name = request.query_params.get('name')
+    email = request.query_params.get('email')
+    
+    if not name or not email:
+      return Response({"error": "회원 이름과 이메일을 모두 입력해주세요"}, status=status.HTTP_400_BAD_REQUEST)
+    User = get_user_model()
+    try:
+      user = User.objects.get(name=name, email=email)
+      return Response({"user_id": user.id})
+    except User.DoesNotExist:
+      return Response({"error": "회원이 존재하지 않습니다"}, status=status.HTTP_404_NOT_FOUND)
+
+class GetUserPWView(APIView):
+  def get(self, request):
+    username = request.query_params.get('username')
+    email = request.query_params.get('email')
+    
+    if not username or not email:
+      return Response({"error": "회원 ID와 이메일을 모두 입력해주세요"}, status=status.HTTP_400_BAD_REQUEST)
+    User = get_user_model()
+    try:
+      user = User.objects.get(username=username, email=email)
+      return Response({"password": user.password})
+    except User.DoesNotExist:
+      return Response({"error": "회원이 존재하지 않습니다"}, status=status.HTTP_404_NOT_FOUND)
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
   def validate(self, attrs):

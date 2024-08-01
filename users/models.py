@@ -19,12 +19,12 @@ class User(AbstractUser):
 
 class Interest(models.Model):
   INTEREST_CHOICES = (
-    ('belief', '가치관'),
-    ('finance', '재테크'),
-    ('love', '사랑'),
-    ('daily', '생활 지식'),
-    ('relationship', '인간 관계'),
-    ('career', '진로'),
+    ('가치관', '가치관'),
+    ('재테크', '재테크'),
+    ('사랑', '사랑'),
+    ('생활지식', '생활지식'),
+    ('인간관계', '인간관계'),
+    ('진로', '진로'),
   )
   name = models.CharField(max_length=20, choices=INTEREST_CHOICES, unique=True)
 
