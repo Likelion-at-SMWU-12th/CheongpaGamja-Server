@@ -38,7 +38,8 @@ class ChattingViewSet(viewsets.ModelViewSet):
 
         mentee = get_object_or_404(Mentee, user=user)
         mentor = get_object_or_404(Mentor, pk=data.get('mentorId'))
-        interests = data.get('interests')
+        interests = data.get('interests', [])
+
         title = data.get('title')
         
         if not interests or not title:
@@ -51,8 +52,8 @@ class ChattingViewSet(viewsets.ModelViewSet):
             title=title
         )
 
-        for interest_id in interests:
-            interest = get_object_or_404(Interest, pk=interest_id)
+        for interest_name in interests:
+            interest = Interest.objects.get(name=interest_name)
             ChatInterest.objects.create(chatroom=chatroom, interest=interest)
         
         serializer = ChatRoomSerializer(chatroom)
