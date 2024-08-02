@@ -21,44 +21,89 @@ def my_page(request):
     chatCount = chatrooms.values('interests__name').annotate(count=Count('id'))
 
     chatCountDict = {record['interests__name']: record['count'] for record in chatCount}
+
     mentoringRecord = []
-    for code, name in Interest.INTEREST_CHOICES:
-        mentoringRecord.append({
-            'interest': name,
-            'count': chatCountDict.get(code, 0)
-        })
+
+    # 멘토링 내역
+    # if user.is_mentor:
+    #     chatrooms = Chatroom.objects.filter(mentor=user.mentor)
+    # else:
+    #     chatrooms = Chatroom.objects.filter(mentee=user.mentee)
+
+    # chatCount = chatrooms.values('interests__name').annotate(count=Count('id'))
+
+    # chatCountDict = {record['interests__name']: record['count'] for record in chatCount}
+    # mentoringRecord = []
+    # for code, name in Interest.INTEREST_CHOICES:
+    #     mentoringRecord.append({
+    #         'interest': name,
+    #         'count': chatCountDict.get(code, 0)
+    #     })
     
     # 일지 목록
     myLogs = Log.objects.filter(author=user)
+    myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
 
     # 멘토 정보 추가
     if user.is_mentor:
-        # chatrooms = Chatroom.objects.filter(mentor=user.mentor)
-        myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
+        for interest in user.mentor.interests.all():
+            mentoringRecord.append({
+                'interest': interest.name,
+                'count': chatCountDict.get(interest.name, 0)
+        })
+        
         latest_review = Review.objects.filter(mentor=user.mentor).order_by('-created_at').first()
         data = {
             "info": MentorSerializer(user.mentor).data,
             "name": user.name,
             "mentoringRecord": mentoringRecord,
-            "myMentoring": myMentoring,
-            "myReview": MyReviewSerializer(latest_review).data,
-            "myLogs" : MyLogSerializer(myLogs, many=True).data
+            # "myMentoring": myMentoring,
+            # "myReview": MyReviewSerializer(latest_review).data,
+            # "myLogs" : MyLogSerializer(myLogs, many=True).data
         }
+        if myMentoring:
+            data["myMentoring"] = myMentoring
+        else:
+            data["myMentoring"] = []
+        if latest_review:
+            data["myReview"] = MyReviewSerializer(latest_review).data
+        else:
+            data["myReview"] = []
+        if myLogs:
+            data["myLogs"] = MyLogSerializer(myLogs, many=True).data
+        else:
+            data["myLogs"] = []
     
     # 멘티 정보 추가
     else:
-        # chatrooms = Chatroom.objects.filter(mentee=user.mentee)
-        myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
+        for code, name in Interest.INTEREST_CHOICES:
+            mentoringRecord.append({
+                'interest': name,
+                'count': chatCountDict.get(code, 0)
+            })
+
         latest_concern = Concern.objects.filter(author=user.mentee).order_by('-created_at').first()
         data = {
             "info": MenteeSerializer(user.mentee).data,
             "name": user.name,
-            "concerns": MyConcernSerializer(latest_concern).data,
+            # "concerns": MyConcernSerializer(latest_concern).data,
             "mentoringRecord": mentoringRecord,
-            "myMentoring": myMentoring,
-            "myLogs" : MyLogSerializer(myLogs, many=True).data
+            # "myMentoring": myMentoring,
+            # "myLogs" : MyLogSerializer(myLogs, many=True).data
         }
-    
+        if latest_concern:
+            data["concern"] = MyConcernSerializer(latest_concern).data
+        else:
+            data["concern"] = []
+        if myMentoring:
+            data["myMentoring"] = myMentoring
+        else:
+            data["myMentoring"] = []
+        if myLogs:
+            data["myLogs"] = MyLogSerializer(myLogs, many=True).data
+        else:
+            data["myLogs"] = []
+
     return Response(data)
 
 @api_view(['GET'])
@@ -76,6 +121,7 @@ def profile(request, user_id):
     chatCountDict = {record['interests__name']: record['count'] for record in chatCount}
 
     mentoringRecord = []    
+    # 멘토 프로필
     if user.is_mentor:
         for interest in user.mentor.interests.all():
             mentoringRecord.append({
@@ -116,8 +162,11 @@ def profile(request, user_id):
             "name": user.name,
             "concern": MyConcernSerializer(latest_concern).data,
             "mentoringRecord": mentoringRecord,
-            "myMentoring": myMentoring,
         }
+        if myMentoring:
+            data["myMentoring"] = myMentoring
+        else:
+            data["myMentoring"] = []
 
     return Response(data)
 

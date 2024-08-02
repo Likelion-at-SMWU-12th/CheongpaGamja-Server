@@ -36,7 +36,7 @@ from rest_framework_simplejwt.views import (
 router = DefaultRouter()
 router.register(r'concerns', ConcernViewSet, basename='concern')
 router.register(r'comments', CommentViewSet, basename='comment')
-router.register(r'mentors', MentorViewSet, basename='mentor')
+# router.register(r'mentors', MentorViewSet, basename='mentor')
 router.register(r'chat', ChattingViewSet, basename='chatting')
 router.register(r'log', LogViewSet, basename='log')
 router.register(r'review', ReviewViewSet, basename='review')
@@ -48,6 +48,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # 토큰 갱신 엔드포인트
 
     path('matching/', matching),
+    path("mentors/", mentor_list),
     path('', include(router.urls)),
     path('concerns/<int:concern_id>/', include(router.urls)),
     path('my-page/', my_page),

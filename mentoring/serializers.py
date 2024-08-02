@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from .models import *
 from users.serializers import *
+from django.db.models import Count
 
 class ConcernSerializer(serializers.ModelSerializer):
     author = MenteeSerializer(read_only=True)
@@ -52,4 +53,10 @@ class ConcernViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Concern
         fields = ['id', 'author', 'interests', 'content', 'comments']
+        
+class MentorViewSerializer(serializers.ModelSerializer):
+    mentor_name = serializers.CharField(source='user.name', read_only=True)
 
+    class Meta:
+        model = Mentor
+        fields = ['user', 'mentor_name', 'rating']

@@ -5,6 +5,7 @@ from rest_framework import viewsets, status
 from django.contrib.auth import login, logout, authenticate
 from users.serializers import *
 from users.models import *
+from chatting.models import *
 from .serializers import *
 from .models import *
 from django.db.models import Count
@@ -216,17 +217,29 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         
 # 멘토 조회
-class MentorViewSet(viewsets.ModelViewSet):
-    queryset = Mentor.objects.all()
-    serializer_class = MentorSerializer
+# class MentorViewSet(viewsets.ModelViewSet):
+#     queryset = Mentor.objects.all()
+#     serializer_class = MentorSerializer
 
-    # 멘토 목록(멘티에게 보여주기)
-    def list(self, request):
-        if request.user.is_mentor:
-            return Response({"현재 사용자가 멘티가 아닙니다"}, status=400)
-        mentors = self.queryset
-        serializer = self.get_serializer(mentors, many=True)
+#     # 멘토 목록(멘티에게 보여주기)
+#     def list(self, request):
+#         if request.user.is_mentor:
+#             return Response({"현재 사용자가 멘티가 아닙니다"}, status=400)
+#         mentors = self.queryset
+#         serializer = self.get_serializer(mentors, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def mentor_list(request):
+    user = request.user
+    if user.is_mentor:
+        return Response({"error" : "현재 사용자가 멘티가 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        mentors = Mentor.objects.all()
+        serializer = MentorViewSerializer(mentors, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
 
 # 관심 멘토 설정
 @api_view(['POST'])
