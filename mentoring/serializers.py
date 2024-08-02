@@ -29,11 +29,16 @@ class ConcernSerializer(serializers.ModelSerializer):
             return concerns
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = MentorInterest()
-    
+    # author = MentorInterest()
+    # author = MentorSerializer(read_only=True)
+    author = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
         fields = ['author', 'content']
+    
+    def get_author(self, obj):
+        return obj.author.user.id
 
 class ConcernViewSerializer(serializers.ModelSerializer):
     author = MenteeSerializer()

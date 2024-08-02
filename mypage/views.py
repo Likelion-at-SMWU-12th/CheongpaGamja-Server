@@ -62,6 +62,51 @@ def my_page(request):
     return Response(data)
 
 @api_view(['GET'])
+def profile(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+
+    # 멘토링 내역
+    if user.is_mentor:
+        chatrooms = Chatroom.objects.filter(mentor=user.mentor)
+    else:
+        chatrooms = Chatroom.objects.filter(mentee=user.mentee)
+
+    chatCount = chatrooms.values('interests__name').annotate(count=Count('id'))
+
+    chatCountDict = {record['interests__name']: record['count'] for record in chatCount}
+    mentoringRecord = []
+    for code, name in Interest.INTEREST_CHOICES:
+        mentoringRecord.append({
+            'interest': name,
+            'count': chatCountDict.get(code, 0)
+        })
+
+    # 멘토 프로필
+    if user.is_mentor:
+        myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
+        latest_review = Review.objects.filter(mentor=user.mentor).order_by('-created_at').first()
+        data = {
+            "info": MentorSerializer(user.mentor).data,
+            "name": user.name,
+            "mentoringRecord": mentoringRecord,
+            "myMentoring": myMentoring,
+            "myReview": MyReviewSerializer(latest_review).data,
+        }
+    # 멘티 프로필
+    else:
+        myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
+        latest_concern = Concern.objects.filter(author=user.mentee).order_by('-created_at').first()
+        data = {
+            "name": user.name,
+            "concern": MyConcernSerializer(latest_concern).data,
+            "mentoringRecord": mentoringRecord,
+            "myMentoring": myMentoring,
+        }
+
+    return Response(data)
+
+
+@api_view(['GET'])
 def my_concerns(request):
     user = request.user
     
