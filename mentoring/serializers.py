@@ -9,7 +9,10 @@ class ConcernSerializer(serializers.ModelSerializer):
     interests_ids = InterestSerializer(many=True, read_only=True)
 
     interests = serializers.ListField(
-        child=serializers.PrimaryKeyRelatedField(queryset=Interest.objects.all()),
+        child=serializers.SlugRelatedField(
+            queryset=Interest.objects.all(),
+            slug_field='name'
+        ),
         allow_empty=False,  # Ensures at least one interest is required
         write_only=True
     )
@@ -21,9 +24,10 @@ class ConcernSerializer(serializers.ModelSerializer):
         def create(self, validated_data):
             author = self.context['request'].user.mentee
             concerns = Concern.objects.create(author=author, content=validated_data['content'])
-            interests = validated_data.get('interests', [])
+            interests_data = validated_data.pop('interests')
         
-            for interest in interests:
+            for interest_name in interests_data:
+                interest = Interest.objects.get(name=interest_name)
                 ConcernInterest.objects.create(concern=concerns, interest=interest)
             
             return concerns

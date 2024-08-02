@@ -87,9 +87,10 @@ def matching(request):
         return Response({"error":"interests가 필요합니다."})
     
     mentee_interests = []
-    for interest_id in interests:
-        interest = get_object_or_404(Interest, pk=interest_id)
+    for interest_name in interests:
+        interest = Interest.objects.get(name=interest_name)
         mentee_interests.append(interest)
+
     
     # 설정한 카테고리와 일치하는 '멘토' 추출
     # 카테고리가 많이 일치하는 순대로 정렬
@@ -142,7 +143,8 @@ class ConcernViewSet(viewsets.ModelViewSet):
         
         concern = Concern.objects.create(author=request.user.mentee, content=content)
         
-        for interest in interests_data:
+        for interest_name in interests_data:
+            interest = Interest.objects.get(name=interest_name)
             ConcernInterest.objects.create(concern=concern, interest=interest)
         
         concern_serializer = self.get_serializer(concern)
@@ -158,9 +160,6 @@ class ConcernViewSet(viewsets.ModelViewSet):
         if concern.author.user != request.user:
             return Response({"error": "수정 권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
         
-        # partial = kwargs.pop('partial', False)
-        # print(partial)
-        # serializer = self.get_serializer(concern, data=request.data, partial=partial, context={'request': request})
         serializer = self.get_serializer(concern, data=request.data, context={'request': request})
 
         if serializer.is_valid():
@@ -173,7 +172,8 @@ class ConcernViewSet(viewsets.ModelViewSet):
             if interests_data is not None:
                 ConcernInterest.objects.filter(concern=concern).delete()
 
-                for interest in interests_data:
+                for interest_name in interests_data:
+                    interest = Interest.objects.get(name=interest_name)
                     ConcernInterest.objects.create(concern=concern, interest=interest)
 
             return Response(ConcernViewSerializer(concern).data)
