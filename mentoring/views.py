@@ -117,6 +117,7 @@ class ConcernViewSet(viewsets.ModelViewSet):
             # 고민에 대한 답변이 4개 이하인 것만 보여주기
             concerns = Concern.objects.annotate(num_comments=Count('comments')).filter(num_comments__lte=4)
             serializer = ConcernViewSerializer(concerns, many=True)
+            # serializer = ConcernSerializer(concerns, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"현재 사용자가 멘토가 아닙니다"}, status=400)
