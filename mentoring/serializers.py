@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from .models import *
 from users.serializers import *
+from chatting.models import *
 from django.db.models import Count
 
 class ConcernSerializer(serializers.ModelSerializer):
@@ -49,14 +50,37 @@ class ConcernViewSerializer(serializers.ModelSerializer):
     author = MenteeSerializer()
     interests = InterestSerializer(many=True)
     comments = CommentSerializer(many=True, read_only=True)
+    mentee_name = serializers.CharField(source='author.user.name', read_only=True)
 
     class Meta:
         model = Concern
-        fields = ['id', 'author', 'interests', 'content', 'comments']
+        fields = ['id', 'author','mentee_name', 'interests', 'content', 'comments']
         
 class MentorViewSerializer(serializers.ModelSerializer):
     mentor_name = serializers.CharField(source='user.name', read_only=True)
+    mentoring_record = serializers.SerializerMethodField()
 
     class Meta:
         model = Mentor
-        fields = ['user', 'mentor_name', 'rating']
+        fields = ['user', 'mentor_name', 'mentoring_record', 'rating']
+
+    def get_mentoring_record(self, obj):
+        user = obj.user
+
+        if user.is_mentor:
+            chatrooms = Chatroom.objects.filter(mentor=user.mentor)
+        else:
+            chatrooms = Chatroom.objects.filter(mentee=user.mentee)
+
+        chatCount = chatrooms.values('interests__name').annotate(count=Count('id'))
+        chatCountDict = {record['interests__name']: record['count'] for record in chatCount}
+
+        mentoringRecord = []
+        if user.is_mentor:
+            for interest in user.mentor.interests.all():
+                mentoringRecord.append({
+                    'interest': interest.name,
+                    'count': chatCountDict.get(interest.name, 0)
+                })
+        
+        return mentoringRecord
