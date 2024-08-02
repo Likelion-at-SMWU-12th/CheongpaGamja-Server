@@ -96,4 +96,4 @@ class ChattingViewSet(viewsets.ModelViewSet):
             if myMentors:
                 return Response(myMentors, status=status.HTTP_200_OK)          
             else:
-                return Response({"현재 관심 설정한 멘토가 없습니다."}) 
+                return Response([]) 
