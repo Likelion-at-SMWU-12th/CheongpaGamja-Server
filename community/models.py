@@ -13,4 +13,4 @@ class Column(models.Model):
   scraps = models.ManyToManyField(User, related_name='scraped_columns', blank=True)
   
   def __str__(self):
-    return self.title
+    return f"Column({self.id}): {self.title}"

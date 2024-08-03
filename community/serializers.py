@@ -4,6 +4,23 @@ from .models import Column
 from users.models import User, Interest, Mentor
 from users.serializers import InterestSerializer, UserSerializer, MentorSerializer
 
+class UserProfileSerializer(serializers.ModelSerializer):
+  is_mentor = serializers.BooleanField()
+  mentor_profile = serializers.SerializerMethodField()
+
+  class Meta:
+    model = User
+    fields = ['id', 'username', 'name', 'is_mentor', 'mentor_profile']
+
+  def get_mentor_profile(self, obj):
+    if obj.is_mentor:
+      mentor = Mentor.objects.get(user=obj)
+      return {
+        'rating': mentor.rating,
+        'interests': [interest.name for interest in mentor.interests.all()]
+      }
+    return None
+
 class ColumnSerializer(serializers.ModelSerializer):
   author = UserSerializer(read_only=True)
   categories = InterestSerializer(many=True, read_only=True)
@@ -30,8 +47,11 @@ class ColumnSerializer(serializers.ModelSerializer):
 
   def get_is_scraped(self, obj):
     request = self.context.get('request')
+    print(f"Request: {request}")  # 디버그 출력
     if request and request.user.is_authenticated:
-      return obj.scraps.filter(id=request.user.id).exists()
+      is_scraped = obj.scraps.filter(id=request.user.id).exists()
+      print(f"User: {request.user}, Is scraped: {is_scraped}")  # 디버그 출력
+      return is_scraped
     return False
 
 class ColumnCreateSerializer(serializers.ModelSerializer):
