@@ -108,6 +108,12 @@ class LogoutView(APIView):
 class UserViewSet(viewsets.ModelViewSet):
   queryset = User.objects.all()
   serializer_class = UserSerializer
+  def get_queryset(self):
+    return User.objects.prefetch_related(
+      'mentor',
+      'mentor__interests',
+      'mentee'
+    )
   def get_permissions(self):
     if self.action == 'create':
       permission_classes = [AllowAny]
