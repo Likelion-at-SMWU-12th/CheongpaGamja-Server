@@ -16,10 +16,11 @@ class ChattingViewSet(viewsets.ModelViewSet):
     def list(self, request):
         user = request.user
         if user.is_mentor:
-            # chatrooms = Chatroom.objects.filter(mentor=user.mentor)
+            chatrooms = Chatroom.objects.filter(mentor=user.mentor)
             recent_chats = Chatroom.objects.filter(mentor=user.mentor, mentor_response=True)
             mentee_suggestions = Chatroom.objects.filter(mentor=user.mentor, mentor_response=False)
             return Response({
+                "all_chats" : ChatRoomSerializer(chatrooms, many=True).data,
                 "recent_chats" : ChatRoomSerializer(recent_chats, many=True).data,
                 "mentee_suggestions" : ChatRoomSerializer(mentee_suggestions, many=True).data
             })
