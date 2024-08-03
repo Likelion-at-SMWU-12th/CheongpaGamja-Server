@@ -52,6 +52,7 @@ class ColumnSerializer(serializers.ModelSerializer):
       is_scraped = obj.scraps.filter(id=request.user.id).exists()
       print(f"User: {request.user}, Is scraped: {is_scraped}")  # 디버그 출력
       return is_scraped
+    print("User not authenticated")  # 디버그 로그  
     return False
 
 class ColumnCreateSerializer(serializers.ModelSerializer):
