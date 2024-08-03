@@ -23,22 +23,6 @@ def my_page(request):
     chatCountDict = {record['interests__name']: record['count'] for record in chatCount}
 
     mentoringRecord = []
-
-    # 멘토링 내역
-    # if user.is_mentor:
-    #     chatrooms = Chatroom.objects.filter(mentor=user.mentor)
-    # else:
-    #     chatrooms = Chatroom.objects.filter(mentee=user.mentee)
-
-    # chatCount = chatrooms.values('interests__name').annotate(count=Count('id'))
-
-    # chatCountDict = {record['interests__name']: record['count'] for record in chatCount}
-    # mentoringRecord = []
-    # for code, name in Interest.INTEREST_CHOICES:
-    #     mentoringRecord.append({
-    #         'interest': name,
-    #         'count': chatCountDict.get(code, 0)
-    #     })
     
     # 일지 목록
     myLogs = Log.objects.filter(author=user)
