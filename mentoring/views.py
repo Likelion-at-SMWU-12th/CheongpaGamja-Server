@@ -104,7 +104,7 @@ def matching(request):
         '-rating'
     )[:5]
 
-    serializer = MentorSerializer(matching_mentors, many=True)
+    serializer = MentorViewSerializer(matching_mentors, many=True)
     return Response(serializer.data, status=200)
 
 

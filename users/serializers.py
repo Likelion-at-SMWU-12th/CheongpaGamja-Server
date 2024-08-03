@@ -13,7 +13,7 @@ class MentorSerializer(serializers.ModelSerializer):
     child=serializers.ChoiceField(choices=[choice[0] for choice in Interest.INTEREST_CHOICES]),  # 선택 항목의 키 값만 사용
     write_only=True
   )
-
+  mentor_name = serializers.CharField(source='user.name', read_only=True)
   # Read-only field to display interests
   interests_display = InterestSerializer(source='interests', many=True, read_only=True)
 
@@ -22,12 +22,13 @@ class MentorSerializer(serializers.ModelSerializer):
     fields = [
       'id', # read-only로!
       'user', # read-only로!
+      'mentor_name',
       'interests',
       'interests_display',
       'rating',
       'total_ratings'
     ]
-    read_only_fields = ['id', 'user']
+    read_only_fields = ['id', 'user', 'mentor_name']
 
   def validate_interests(self, value):
     if len(value) > 3:
