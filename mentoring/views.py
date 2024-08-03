@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from users.serializers import *
 from users.models import *
 from chatting.models import *
+from mypage.serializers import *
 from .serializers import *
 from .models import *
 from django.db.models import Count
@@ -104,8 +105,8 @@ def matching(request):
         '-rating'
     )[:5]
 
-    serializer = MentorViewSerializer(matching_mentors, many=True)
-    return Response(serializer.data, status=200)
+    serializer = MentorProfileSerializer(matching_mentors, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # 고민 생성(멘티)
