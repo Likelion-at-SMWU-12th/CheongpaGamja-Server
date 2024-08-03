@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'chatting',
     'mypage',
     'corsheaders',
+    'community',
 ]
 
 AUTH_USER_MODEL = 'users.User'
