@@ -58,12 +58,18 @@ class ConcernViewSerializer(serializers.ModelSerializer):
         
 class MentorViewSerializer(serializers.ModelSerializer):
     mentor_name = serializers.CharField(source='user.name', read_only=True)
+    is_subscribed = serializers.SerializerMethodField()
     mentoring_record = serializers.SerializerMethodField()
     mentor_id = serializers.IntegerField(source='id', read_only=True)
 
     class Meta:
         model = Mentor
-        fields = ['user', 'mentor_id', 'mentor_name', 'mentoring_record', 'rating']
+        fields = ['user', 'mentor_id', 'mentor_name', 'is_subscribed', 'mentoring_record', 'rating']
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        user = request.user
+        return obj.like_mentees.filter(id=user.mentee.id).exists()
 
     def get_mentoring_record(self, obj):
         user = obj.user

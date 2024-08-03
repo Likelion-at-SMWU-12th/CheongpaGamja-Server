@@ -237,7 +237,7 @@ def mentor_list(request):
         return Response({"error" : "현재 사용자가 멘티가 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
     else:
         mentors = Mentor.objects.all()
-        serializer = MentorViewSerializer(mentors, many=True)
+        serializer = MentorViewSerializer(mentors, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         
         
