@@ -51,8 +51,8 @@ class MenteeSerializer(serializers.ModelSerializer):
     read_only_fields = ['id', 'user']
 
 class UserSerializer(serializers.ModelSerializer):
-  mentor_profile = MentorSerializer(required=False)
-  mentee_profile = MenteeSerializer(required=False)
+  mentor_profile = MentorSerializer(source='mentor', read_only=True) #근데 리드온리로 하면 나중에 수정 못하는거 아냐?
+  mentee_profile = MenteeSerializer(source='mentee', read_only=True)
 
   class Meta:
     model = User
