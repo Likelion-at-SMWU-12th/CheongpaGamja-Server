@@ -6,9 +6,16 @@ from .models import Column
 from .serializers import ColumnSerializer, ColumnCreateSerializer, UserProfileSerializer
 from users.models import Mentor
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+
+@method_decorator(never_cache, name='dispatch')
 class ColumnViewSet(viewsets.ModelViewSet):
   queryset = Column.objects.prefetch_related('likes', 'scraps', 'categories').select_related('author').all()
   serializer_class = ColumnSerializer
+  def get_queryset(self):
+    return Column.objects.all().select_related('author').prefetch_related('scraps', 'likes', 'categories')
+  
   @action(detail=True, methods=['get'])
   def author_profile(self, request, pk=None):
     column = self.get_object()
