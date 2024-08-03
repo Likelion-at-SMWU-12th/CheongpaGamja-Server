@@ -122,10 +122,25 @@ class UserViewSet(viewsets.ModelViewSet):
     return [permission() for permission in permission_classes]
 
   def create(self, request, *args, **kwargs):
-    response = super().create(request, *args, **kwargs)
-    if response.status_code == status.HTTP_201_CREATED:
-      response.data['message'] = "User created successfully!"
-    return response
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+    headers = self.get_success_headers(serializer.data)
+    
+    # Re-fetch the user to get the full data including related profiles
+    user = User.objects.prefetch_related(
+        'mentor', 'mentor__interests', 'mentee'
+    ).get(id=user.id)
+    response_serializer = self.get_serializer(user)
+    
+    response_data = response_serializer.data
+    response_data['message'] = "User created successfully!"
+    
+    return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+    # response = super().create(request, *args, **kwargs)
+    # if response.status_code == status.HTTP_201_CREATED:
+    #   response.data['message'] = "User created successfully!"
+    # return response
   
   # PUT을 통해서 전체 업뎃 (채우지 않은 속성은 초기화됨)
   def update(self, request, *args, **kwargs):
