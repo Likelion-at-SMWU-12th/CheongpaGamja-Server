@@ -67,3 +67,58 @@ class MyReviewSerializer(serializers.ModelSerializer):
             interests = chatroom.interests.all()
             return [{'name': interest.name} for interest in interests]  # Adjust based on your Interest model
         return []
+
+class MentorProfileSerializer(serializers.ModelSerializer):
+    info = serializers.SerializerMethodField()
+    name = serializers.CharField(source='user.name', read_only=True)
+    mentoringRecord = serializers.SerializerMethodField()
+    myMentoring = serializers.SerializerMethodField()
+    myReview = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Mentor
+        fields = ['id', 'info', 'name', 'mentoringRecord', 'myMentoring', 'myReview']
+
+    def get_info(self, obj):
+        user = obj.user
+        return MentorSerializer(user.mentor).data
+
+    def get_mentoringRecord(self, obj):
+        user = obj.user
+        if user.is_mentor:
+            chatrooms = Chatroom.objects.filter(mentor=user.mentor)
+        else:
+            chatrooms = Chatroom.objects.filter(mentee=user.mentee)
+
+        chatCount = chatrooms.values('interests__name').annotate(count=Count('id'))
+        chatCountDict = {record['interests__name']: record['count'] for record in chatCount}
+
+        mentoringRecord = []
+        if user.is_mentor:
+            for interest in user.mentor.interests.all():
+                mentoringRecord.append({
+                    'interest': interest.name,
+                    'count': chatCountDict.get(interest.name, 0)
+                })
+
+        return mentoringRecord
+
+    def get_myMentoring(self, obj):
+        user = obj.user
+        if user.is_mentor:
+            chatrooms = Chatroom.objects.filter(mentor=user.mentor)
+        else:
+            chatrooms = Chatroom.objects.filter(mentee=user.mentee)
+
+        myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
+        return myMentoring if myMentoring else []
+
+    def get_myReview(self, obj):
+        user = obj.user
+        latest_review = Review.objects.filter(mentor=user.mentor).order_by('-created_at').first()
+        if latest_review:
+            myReview = MyReviewSerializer(latest_review).data
+        else:
+            myReview = []
+
+        return myReview
