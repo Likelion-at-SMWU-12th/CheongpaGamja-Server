@@ -46,6 +46,8 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # 로그인 엔드포인트
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # 토큰 갱신 엔드포인트
+    
+    path('community/', include('community.urls')),
 
     path('matching/', matching),
     path("mentors/", mentor_list),
