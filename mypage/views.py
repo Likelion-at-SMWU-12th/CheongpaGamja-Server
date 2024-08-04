@@ -93,6 +93,7 @@ def my_page(request):
 @api_view(['GET'])
 def profile(request, user_id):
     user = get_object_or_404(User, pk=user_id)
+    current_user = request.user
 
     # 멘토링 내역
     if user.is_mentor:
@@ -114,10 +115,13 @@ def profile(request, user_id):
         })
         myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
         latest_review = Review.objects.filter(mentor=user.mentor).order_by('-created_at').first()
+        # 멘티의 구독 여부
+        is_subscribed = user.mentor.like_mentees.filter(id=current_user.mentee.id).exists()
 
         data = {
             "info": MentorSerializer(user.mentor).data,
             "name": user.name,
+            "is_subscribed": is_subscribed,
             "mentoringRecord": mentoringRecord,
         }
 
