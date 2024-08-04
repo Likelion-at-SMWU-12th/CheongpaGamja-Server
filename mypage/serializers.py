@@ -32,10 +32,11 @@ class LogSerializer(serializers.ModelSerializer):
 # 멘토링 일지(마이페이지 뷰)
 class MyLogSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
+    name = serializers.CharField(source='author.name', read_only=True)
 
     class Meta:
         model = Log
-        fields = ['id', 'title', 'created_at', 'content']
+        fields = ['id', 'title', 'name', 'created_at', 'content']
     
     def get_created_at(self, obj):
         return obj.created_at.strftime("%Y.%m.%d")
