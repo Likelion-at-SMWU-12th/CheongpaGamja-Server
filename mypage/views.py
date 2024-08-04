@@ -180,7 +180,7 @@ class LogViewSet(viewsets.ModelViewSet):
         user = request.user
         logs = Log.objects.filter(author=user)
 
-        serializer = LogSerializer(logs, many=True)
+        serializer = MyLogSerializer(logs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):

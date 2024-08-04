@@ -35,7 +35,7 @@ class MyLogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Log
-        fields = ['id', 'title', 'created_at']
+        fields = ['id', 'title', 'created_at', 'content']
     
     def get_created_at(self, obj):
         return obj.created_at.strftime("%Y.%m.%d")
