@@ -56,11 +56,15 @@ class ColumnSerializer(serializers.ModelSerializer):
     return False
 
 class ColumnCreateSerializer(serializers.ModelSerializer):
-  categories = serializers.PrimaryKeyRelatedField(queryset=Interest.objects.all(), many=True)
+  categories = serializers.ListField(
+    child=serializers.IntegerField(),
+    write_only=True
+  )
 
   class Meta:
     model = Column
     fields = ['title', 'content', 'image', 'categories']
+
 
   def create(self, validated_data):
     categories = validated_data.pop('categories')

@@ -15,6 +15,11 @@ class ColumnViewSet(viewsets.ModelViewSet):
   serializer_class = ColumnSerializer
   def get_queryset(self):
     return Column.objects.all().select_related('author').prefetch_related('scraps', 'likes', 'categories')
+
+  def get_permissions(self):
+    if self.action in ['create', 'update', 'partial_update', 'destroy']:
+      return [permissions.IsAuthenticated(), IsMentor()]
+    return [permissions.AllowAny()]
   
   @action(detail=True, methods=['get'])
   def author_profile(self, request, pk=None):
@@ -64,7 +69,6 @@ class ColumnViewSet(viewsets.ModelViewSet):
     else:
       column.scraps.add(user)
       is_scraped = True
-    
     # 칼럼 객체를 새로 가져와 시리얼라이즈
     column = self.get_object()  # 이 줄을 추가
     serializer = self.get_serializer(column)
@@ -74,6 +78,31 @@ class ColumnViewSet(viewsets.ModelViewSet):
       'column': serializer.data  # 전체 칼럼 데이터를 포함
     })
     
+  @action(detail=False, methods=['get'], url_path='mentor')
+  def mentor_columns(self, request):
+    mentor_id = request.query_params.get('mentor_id')
+    if not mentor_id:
+      return Response({"error": "mentor_id is required"}, status=400)
+    
+    try:
+      mentor = Mentor.objects.get(id=mentor_id)
+    except Mentor.DoesNotExist:
+      return Response({"error": "Mentor not found"}, status=404)
+    
+    columns = self.get_queryset().filter(author_id=mentor.user_id)
+    serializer = self.get_serializer(columns, many=True)
+    return Response(serializer.data)
+
+  # form-data 전송 시 Int 카테고리
+  def create(self, request, *args, **kwargs):
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    self.perform_create(serializer)
+    headers = self.get_success_headers(serializer.data)
+    
+    # Re-serialize the created object with ColumnSerializer
+    output_serializer = ColumnSerializer(serializer.instance, context={'request': request})
+    return Response(output_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 class IsMentor(permissions.BasePermission):
   def has_permission(self, request, view):
     return request.user.is_authenticated and hasattr(request.user, 'mentor')
