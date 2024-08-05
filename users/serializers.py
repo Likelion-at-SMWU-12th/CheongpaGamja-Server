@@ -97,11 +97,6 @@ class UserSerializer(serializers.ModelSerializer):
     interests_data = validated_data.pop('interests', None)
     
     instance = super().update(instance, validated_data)
-
-    # for attr, value in validated_data.items():
-    #   setattr(instance, attr, value)
-    # instance.save()
-    
     # Update mentor profile
     if instance.is_mentor and mentor_data:
       mentor_serializer = MentorSerializer(instance.mentor_profile, data=mentor_data, partial=True)
