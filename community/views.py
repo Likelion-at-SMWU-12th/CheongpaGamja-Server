@@ -29,7 +29,7 @@ class ColumnViewSet(viewsets.ModelViewSet):
     return queryset
 
   def get_permissions(self):
-    if self.action in ['create', 'update', 'partial_update', 'destroy']:
+    if self.action in ['create', 'update', 'partial_update', 'destroy', 'scrap', 'get_is_scraped']:
       return [permissions.IsAuthenticated(), IsMentor()]
     return [permissions.AllowAny()]
   
@@ -53,6 +53,22 @@ class ColumnViewSet(viewsets.ModelViewSet):
     if self.action in ['create', 'update', 'partial_update', 'destroy']:
       return [permissions.IsAuthenticated(), IsMentor()]
     return [permissions.AllowAny()]
+  # def get_permissions(self):
+  #   if self.action in ['create', 'update', 'partial_update', 'destroy', 'scrap']:
+  #     return [permissions.IsAuthenticated(), IsMentor()]
+  #   elif self.action in ['is_scraped']:
+  #     return [permissions.IsAuthenticated()]
+  #   return [permissions.AllowAny()]
+
+  # @action(detail=True, methods=['get'])
+  # def is_scraped(self, request, pk=None):
+  #   column = self.get_object()
+  #   user = request.user
+  #   if not user.is_authenticated:
+  #     return Response({'is_scraped': False}, status=status.HTTP_200_OK)
+    
+  #   is_scraped = column.scraps.filter(id=user.id).exists()
+  #   return Response({'is_scraped': is_scraped}, status=status.HTTP_200_OK)
 
   @action(detail=True, methods=['post'])
   def like(self, request, pk=None):
