@@ -9,12 +9,23 @@ from users.models import Mentor
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 
+from django.db.models import Q
+from rest_framework.filters import SearchFilter
+
 @method_decorator(never_cache, name='dispatch')
 class ColumnViewSet(viewsets.ModelViewSet):
   queryset = Column.objects.prefetch_related('likes', 'scraps', 'categories').select_related('author').all()
   serializer_class = ColumnSerializer
+  
+  filter_backends = [SearchFilter]
+  search_fields = ['title']
+  
   def get_queryset(self):
-    return Column.objects.all().select_related('author').prefetch_related('scraps', 'likes', 'categories')
+    queryset = Column.objects.all().select_related('author').prefetch_related('scraps', 'likes', 'categories')
+    search_query = self.request.query_params.get('search', None)
+    if search_query:
+      queryset = queryset.filter(Q(title__icontains=search_query))
+    return queryset
 
   def get_permissions(self):
     if self.action in ['create', 'update', 'partial_update', 'destroy']:
