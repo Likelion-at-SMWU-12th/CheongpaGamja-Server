@@ -65,11 +65,8 @@ class UserSerializer(serializers.ModelSerializer):
     }
 
   def create(self, validated_data):
-
-    # # hashed password 가지고 유저 생성
-    # user = User.objects.create_user(**validated_data)
-    mentor_data = validated_data.pop('mentor_profile', None)
-    mentee_data = validated_data.pop('mentee_profile', None)
+    mentor_data = validated_data.pop('mentor', None)
+    mentee_data = validated_data.pop('mentee', None)
 
     password = validated_data.pop('password')
     user = User(**validated_data)
@@ -84,7 +81,6 @@ class UserSerializer(serializers.ModelSerializer):
       for interest_name in interests_data:
         interest = Interest.objects.get(name=interest_name)
         mentor.interests.add(interest)
-        # MentorInterest.objects.create(mentor=mentor, interest=interest)
 
     # Mentee 생성
     elif not user.is_mentor:
