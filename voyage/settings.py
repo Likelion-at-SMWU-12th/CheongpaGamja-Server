@@ -20,20 +20,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-secret_file = os.path.join(BASE_DIR, 'secrets.json')
+# secret_file = os.path.join(BASE_DIR, 'secrets.json')
 
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
+# with open(secret_file) as f:
+#     secrets = json.loads(f.read())
 
-def get_secret(setting):
-    return secrets[setting]
+# def get_secret(setting):
+#     return secrets[setting]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = get_secret("SECRET_KEY")
 SECRET_KEY =  "django-insecure-tyet^-(1&_+&3@!cnaql4gz8^vrclhycv!d^%p0a@t*7kow56x"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
