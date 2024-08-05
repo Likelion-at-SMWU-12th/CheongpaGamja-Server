@@ -57,13 +57,15 @@ class MenteeSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
   mentor_profile = MentorSerializer(source='mentor', required=False) #근데 리드온리로 하면 나중에 수정 못하는거 아냐?
   mentee_profile = MenteeSerializer(source='mentee', required=False)
+  interests = serializers.MultipleChoiceField(choices=Interest.INTEREST_CHOICES, write_only=True, required=False)
+
 
   class Meta:
     model = User
     fields = [
       'id', 'username', 'email', 'password', 'is_mentor', 'name',
       'birth_date', 'profile_pic', 'agreed_to_terms',
-      'mentor_profile', 'mentee_profile'
+      'mentor_profile', 'mentee_profile', 'interests'
     ]
     extra_kwargs = {
       'password': {'write_only': True},
@@ -79,8 +81,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     # # hashed password 가지고 유저 생성
     # user = User.objects.create_user(**validated_data)
-    mentor_data = validated_data.pop('mentor', None)
-    mentee_data = validated_data.pop('mentee', None)
+    mentor_data = validated_data.pop('mentor_profile', None)
+    mentee_data = validated_data.pop('mentee_profile', None)
 
     password = validated_data.pop('password')
     user = User(**validated_data)
@@ -109,10 +111,13 @@ class UserSerializer(serializers.ModelSerializer):
   def update(self, instance, validated_data):
     mentor_data = validated_data.pop('mentor_profile', None)
     mentee_data = validated_data.pop('mentee_profile', None)
+    interests_data = validated_data.pop('interests', None)
+    
+    instance = super().update(instance, validated_data)
 
-    for attr, value in validated_data.items():
-      setattr(instance, attr, value)
-    instance.save()
+    # for attr, value in validated_data.items():
+    #   setattr(instance, attr, value)
+    # instance.save()
     
     # Update mentor profile
     if instance.is_mentor and mentor_data:
@@ -129,4 +134,12 @@ class UserSerializer(serializers.ModelSerializer):
         mentee_serializer.save()
       else:
         print(f"Mentee serializer errors: {mentee_serializer.errors}")
+
+    # 관심사 업데이트
+    if interests_data is not None and instance.is_mentor:
+      mentor = instance.mentor
+      mentor.interests.clear()
+      for interest_name in interests_data:
+        interest, _ = Interest.objects.get_or_create(name=interest_name)
+        mentor.interests.add(interest)
     return instance

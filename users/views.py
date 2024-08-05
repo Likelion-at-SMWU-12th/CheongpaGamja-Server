@@ -137,10 +137,6 @@ class UserViewSet(viewsets.ModelViewSet):
     response_data['message'] = "User created successfully!"
     
     return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
-    # response = super().create(request, *args, **kwargs)
-    # if response.status_code == status.HTTP_201_CREATED:
-    #   response.data['message'] = "User created successfully!"
-    # return response
   
   # PUT을 통해서 전체 업뎃 (채우지 않은 속성은 초기화됨)
   def update(self, request, *args, **kwargs):
