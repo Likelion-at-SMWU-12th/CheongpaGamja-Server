@@ -27,11 +27,6 @@ class ColumnViewSet(viewsets.ModelViewSet):
     if search_query:
       queryset = queryset.filter(Q(title__icontains=search_query))
     return queryset
-
-  def get_permissions(self):
-    if self.action in ['create', 'update', 'partial_update', 'destroy', 'scrap', 'get_is_scraped']:
-      return [permissions.IsAuthenticated(), IsMentor()]
-    return [permissions.AllowAny()]
   
   @action(detail=True, methods=['get'])
   def author_profile(self, request, pk=None):
