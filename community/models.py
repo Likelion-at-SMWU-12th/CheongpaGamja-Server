@@ -7,7 +7,7 @@ class Column(models.Model):
   author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='columns') # related_name이 필요할까?
   published_date = models.DateTimeField(auto_now_add=True)
   content = models.TextField()
-  image = models.ImageField(upload_to='column_images/', null=True, blank=True)
+  image = models.ImageField(upload_to='column_images/', default = 'column_images/voyage_default.png', null=True, blank=True)
   categories = models.ManyToManyField(Interest,related_name='columns')
   likes = models.ManyToManyField(User, related_name='liked_columns', blank=True)
   scraps = models.ManyToManyField(User, related_name='scraped_columns', blank=True)
