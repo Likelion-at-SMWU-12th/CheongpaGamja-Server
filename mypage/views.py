@@ -222,6 +222,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=['GET'], url_path='mentors')
+    def mentorReview(self, request, pk=None):
+        mentor = get_object_or_404(Mentor, pk=pk)
+
+        mentor_reviews = Review.objects.filter(mentor=mentor)
+        serializer = self.get_serializer(mentor_reviews, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     @action(detail=False, methods=['GET'], url_path='my-mentoring')
     def my_mentoring(self, request):
         user = request.user
