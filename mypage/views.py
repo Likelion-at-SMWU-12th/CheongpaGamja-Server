@@ -27,6 +27,10 @@ def my_page(request):
     # 일지 목록
     myLogs = Log.objects.filter(author=user)
     myMentoring = MyChatRoomSerializer(chatrooms, many=True).data
+    
+        # 스크랩한 칼럼 가져오기
+    scraped_columns = Column.objects.filter(scraps=user)
+    scraped_columns_data = ScrapedColumnSerializer(scraped_columns, many=True).data
 
     # 멘토 정보 추가
     if user.is_mentor:
@@ -44,6 +48,7 @@ def my_page(request):
             # "myMentoring": myMentoring,
             # "myReview": MyReviewSerializer(latest_review).data,
             # "myLogs" : MyLogSerializer(myLogs, many=True).data
+            "scrapedColumns": scraped_columns_data
         }
         if myMentoring:
             data["myMentoring"] = myMentoring
@@ -74,6 +79,7 @@ def my_page(request):
             "mentoringRecord": mentoringRecord,
             # "myMentoring": myMentoring,
             # "myLogs" : MyLogSerializer(myLogs, many=True).data
+            "scrapedColumns": scraped_columns_data
         }
         if latest_concern:
             data["concern"] = MyConcernSerializer(latest_concern).data
@@ -87,6 +93,7 @@ def my_page(request):
             data["myLogs"] = MyLogSerializer(myLogs, many=True).data
         else:
             data["myLogs"] = []
+            
 
     return Response(data)
 

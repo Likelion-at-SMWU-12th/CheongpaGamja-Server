@@ -6,6 +6,13 @@ from chatting.models import *
 from chatting.serializers import *
 from .models import *
 
+from community.models import Column
+from community.serializers import ColumnSerializer
+
+class ScrapedColumnSerializer(ColumnSerializer):
+    class Meta(ColumnSerializer.Meta):
+        fields = ['id', 'title', 'author', 'published_date', 'categories']
+
 # 마이 페이지 멘토링(채팅) 내역
 class MyChatRoomSerializer(serializers.ModelSerializer):
     interests = InterestSerializer(many=True)
