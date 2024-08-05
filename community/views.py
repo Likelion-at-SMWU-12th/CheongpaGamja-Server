@@ -49,26 +49,26 @@ class ColumnViewSet(viewsets.ModelViewSet):
     mentor = Mentor.objects.get(user=self.request.user)
     serializer.save(author=self.request.user)
 
-  # def get_permissions(self):
-  #   if self.action in ['create', 'update', 'partial_update', 'destroy']:
-  #     return [permissions.IsAuthenticated(), IsMentor()]
-  #   return [permissions.AllowAny()]
   def get_permissions(self):
-    if self.action in ['create', 'update', 'partial_update', 'destroy', 'scrap']:
+    if self.action in ['create', 'update', 'partial_update', 'destroy']:
       return [permissions.IsAuthenticated(), IsMentor()]
-    elif self.action in ['is_scraped']:
-      return [permissions.IsAuthenticated()]
     return [permissions.AllowAny()]
+  # def get_permissions(self):
+  #   if self.action in ['create', 'update', 'partial_update', 'destroy', 'scrap']:
+  #     return [permissions.IsAuthenticated(), IsMentor()]
+  #   elif self.action in ['is_scraped']:
+  #     return [permissions.IsAuthenticated()]
+  #   return [permissions.AllowAny()]
 
-  @action(detail=True, methods=['get'])
-  def is_scraped(self, request, pk=None):
-    column = self.get_object()
-    user = request.user
-    if not user.is_authenticated:
-      return Response({'is_scraped': False}, status=status.HTTP_200_OK)
+  # @action(detail=True, methods=['get'])
+  # def is_scraped(self, request, pk=None):
+  #   column = self.get_object()
+  #   user = request.user
+  #   if not user.is_authenticated:
+  #     return Response({'is_scraped': False}, status=status.HTTP_200_OK)
     
-    is_scraped = column.scraps.filter(id=user.id).exists()
-    return Response({'is_scraped': is_scraped}, status=status.HTTP_200_OK)
+  #   is_scraped = column.scraps.filter(id=user.id).exists()
+  #   return Response({'is_scraped': is_scraped}, status=status.HTTP_200_OK)
 
   @action(detail=True, methods=['post'])
   def like(self, request, pk=None):
