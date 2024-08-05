@@ -8,16 +8,9 @@ class InterestSerializer(serializers.ModelSerializer):
     fields = ['name']
 
 class MentorSerializer(serializers.ModelSerializer):
-  # Write-only field to receive interests as choice names
-  # interests = serializers.ListField(
-  #   child=serializers.ChoiceField(choices=[choice[0] for choice in Interest.INTEREST_CHOICES]),  # 선택 항목의 키 값만 사용
-  #   write_only=True
-  # )
   interests = serializers.MultipleChoiceField(choices=Interest.INTEREST_CHOICES, write_only=True)
   interests_display = serializers.SerializerMethodField()
   mentor_name = serializers.CharField(source='user.name', read_only=True)
-  # Read-only field to display interests
-  #interests_display = InterestSerializer(source='interests', many=True, read_only=True)
 
   class Meta:
     model = Mentor
@@ -55,7 +48,7 @@ class MenteeSerializer(serializers.ModelSerializer):
     read_only_fields = ['id', 'user']
 
 class UserSerializer(serializers.ModelSerializer):
-  mentor_profile = MentorSerializer(source='mentor', required=False) #근데 리드온리로 하면 나중에 수정 못하는거 아냐?
+  mentor_profile = MentorSerializer(source='mentor', required=False) 
   mentee_profile = MenteeSerializer(source='mentee', required=False)
   interests = serializers.MultipleChoiceField(choices=Interest.INTEREST_CHOICES, write_only=True, required=False)
 
@@ -69,15 +62,9 @@ class UserSerializer(serializers.ModelSerializer):
     ]
     extra_kwargs = {
       'password': {'write_only': True},
-      # 유저 정보 수정 과정에서 아래는 수정불가하게 하고 싶어서 쓴건데 이때문에 회원가입 절차에서 defualt값인 False로만 저장되더라...
-      # 'is_mentor': {'read_only': True},
-      # 'agreed_to_terms': {'read_only': True}
     }
 
   def create(self, validated_data):
-    # # nested profile data 가져오기
-    # mentor_data = validated_data.pop('mentor_profile', None)
-    # mentee_data = validated_data.pop('mentee_profile', None)
 
     # # hashed password 가지고 유저 생성
     # user = User.objects.create_user(**validated_data)
@@ -101,10 +88,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     # Mentee 생성
     elif not user.is_mentor:
-      # if mentee_data is None:
-      #   mentee_data = {}
-      # 멘티는 카테고리를 설정하지 않는다는 새로운 설정!
-      # Mentee.objects.create(user=user, **mentee_data)
       Mentee.objects.create(user=user, **(mentee_data or {}))
     return user
 
