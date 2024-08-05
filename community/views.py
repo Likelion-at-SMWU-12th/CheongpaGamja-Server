@@ -17,6 +17,7 @@ class ColumnViewSet(viewsets.ModelViewSet):
   queryset = Column.objects.prefetch_related('likes', 'scraps', 'categories').select_related('author').all()
   serializer_class = ColumnSerializer
   
+  # 제목 검색 기능 추가
   filter_backends = [SearchFilter]
   search_fields = ['title']
   
