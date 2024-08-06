@@ -15,8 +15,7 @@
 |박우현|성윤정|장유빈|정지윤|유채민|
 |------|-----|------|------|------|
 |기획&디자인|프론트엔드|프론트엔드|백엔드|백엔드|
-|![image](https://github.com/user-attachments/assets/65f126ae-ced5-481c-9581-77dc360d1a5c)|![image](https://github.com/user-attachments/assets/f52e6ebe-95cf-4aec-b47a-92510545e1fa)
-|![image](https://github.com/user-attachments/assets/6ba8d460-1961-4e70-8a3f-7996a5c68834)|![image](https://github.com/user-attachments/assets/de293745-9521-49fe-bf22-6a2be869fbc6)|![image](https://github.com/user-attachments/assets/530bbbe8-4f62-43ed-8a25-becf22c67c56)|
+|![image](https://github.com/user-attachments/assets/65f126ae-ced5-481c-9581-77dc360d1a5c)|![image](https://github.com/user-attachments/assets/f52e6ebe-95cf-4aec-b47a-92510545e1fa)|![image](https://github.com/user-attachments/assets/6ba8d460-1961-4e70-8a3f-7996a5c68834)|![image](https://github.com/user-attachments/assets/de293745-9521-49fe-bf22-6a2be869fbc6)|![image](https://github.com/user-attachments/assets/530bbbe8-4f62-43ed-8a25-becf22c67c56)|
 
 
 
