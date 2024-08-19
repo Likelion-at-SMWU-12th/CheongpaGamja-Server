@@ -1,5 +1,6 @@
 # 청파동감자 백엔드 레포
 2024 멋쟁이사자처럼 12기 중앙해커톤 : 숙명여대 '청파동감자'팀
+<br/><img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> <img src="https://img.shields.io/badge/django-092E20?style=for-the-badge&logo=django&logoColor=white">
 ![image](https://github.com/user-attachments/assets/ce43bc66-2170-495c-8fa0-e1a8d1779003)
 <br/><br/><br/>
 # 1. 서비스 소개
@@ -31,6 +32,8 @@
 |------|-----|------|------|------|
 |기획&디자인|프론트엔드|프론트엔드|백엔드|백엔드|
 |![image](https://github.com/user-attachments/assets/65f126ae-ced5-481c-9581-77dc360d1a5c)|![image](https://github.com/user-attachments/assets/f52e6ebe-95cf-4aec-b47a-92510545e1fa)|![image](https://github.com/user-attachments/assets/6ba8d460-1961-4e70-8a3f-7996a5c68834)|![image](https://github.com/user-attachments/assets/de293745-9521-49fe-bf22-6a2be869fbc6)|![image](https://github.com/user-attachments/assets/530bbbe8-4f62-43ed-8a25-becf22c67c56)|
+
+
 ![image](https://github.com/user-attachments/assets/8470f1df-dc11-43f9-9299-1cd5846304ac)
 
 
