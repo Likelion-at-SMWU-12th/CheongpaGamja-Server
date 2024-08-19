@@ -19,7 +19,8 @@
 ![image](https://github.com/user-attachments/assets/c1e6d081-654b-4938-b286-90b51cc4b7b4)
 
 # 4. 서비스 추진 계획
-<img width="1920" alt="서비스 추진 계획" src="https://github.com/user-attachments/assets/792c74e5-e59f-4f00-bc4f-71bfeac7d0c4
+![image](https://github.com/user-attachments/assets/2b23b613-53e1-4b7a-a776-b6c289876753)
+
 
 # 5. 팀원 소개
 |박우현|성윤정|장유빈|정지윤|유채민|
