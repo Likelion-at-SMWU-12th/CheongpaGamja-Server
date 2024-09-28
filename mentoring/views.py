@@ -118,7 +118,7 @@ class ConcernViewSet(viewsets.ModelViewSet):
     def list(self, request):
         if request.user.is_mentor :
             # 고민에 대한 답변이 4개 이하인 것만 보여주기
-            concerns = Concern.objects.annotate(num_comments=Count('comments')).filter(num_comments__lte=4)
+            concerns = Concern.objects.annotate(num_comments=Count('comments')).filter(num_comments__lte=4).order_by('id')
             serializer = ConcernViewSerializer(concerns, many=True)
             # serializer = ConcernSerializer(concerns, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
